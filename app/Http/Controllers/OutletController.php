@@ -33,11 +33,54 @@ class OutletController extends Controller
 }
 
     public function show($id)
-    {
-        $outlet = Outlet::findOrFail($id);
-        return view('outlet.show', compact('outlet'));
-    }
+{
+    $outlet = Outlet::with([
+        'users',
+        'members'
+    ])->findOrFail($id);
 
+    $jumlahKasir = $outlet->users()
+        ->where('role', 'kasir')
+        ->count();
+
+    $jumlahMember = $outlet->members()
+        ->count();
+
+    $jumlahTransaksi = \App\Models\Transaksi::whereHas(
+        'member',
+        function ($q) use ($outlet) {
+
+            $q->where(
+                'outlet_id',
+                $outlet->id
+            );
+
+        }
+    )->count();
+
+    $totalPendapatan = \App\Models\Transaksi::whereHas(
+        'member',
+        function ($q) use ($outlet) {
+
+            $q->where(
+                'outlet_id',
+                $outlet->id
+            );
+
+        }
+    )->sum('total');
+
+    return view(
+        'outlet.show',
+        compact(
+            'outlet',
+            'jumlahKasir',
+            'jumlahMember',
+            'jumlahTransaksi',
+            'totalPendapatan'
+        )
+    );
+}
     public function edit($id)
     {
         $outlet = Outlet::findOrFail($id);

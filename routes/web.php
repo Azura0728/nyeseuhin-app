@@ -47,7 +47,7 @@ Route::middleware(['auth'])->group(function () {
     ])->name('profile.destroy');
 });
 
-Route::middleware(['auth','kasir'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::resource(
         'member',

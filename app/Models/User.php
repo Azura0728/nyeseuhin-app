@@ -10,7 +10,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'is_super_admin'])]
+#[Fillable([
+    'name',
+    'email',
+    'password',
+    'role',
+    'is_super_admin',
+    'outlet_id'
+])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -55,4 +62,11 @@ class User extends Authenticatable
     {
         return $this->role == 'kasir';
     }
+
+    public function outlet()
+    {
+        return $this->belongsTo(Outlet::class);
+    }
+
+    
 }

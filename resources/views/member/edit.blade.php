@@ -34,6 +34,32 @@
                     <label class="form-label">No. Telepon</label>
                     <input type="text" name="no_telp" class="form-control" value="{{ $member->no_telp }}" required>
                 </div>
+                <div class="mb-3">
+
+    <label class="form-label">
+        Outlet
+    </label>
+
+    <select
+        name="outlet_id"
+        class="form-control"
+        required>
+
+        @foreach($outlets as $outlet)
+
+            <option
+                value="{{ $outlet->id }}"
+                {{ $member->outlet_id == $outlet->id ? 'selected' : '' }}>
+
+                {{ $outlet->nama }}
+
+            </option>
+
+        @endforeach
+
+    </select>
+
+</div>
                 <button type="submit" class="btn btn-primary">Update</button>
                 <a href="{{ route('member.index') }}" class="btn btn-secondary ms-2">Batal</a>
             </form>

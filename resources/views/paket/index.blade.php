@@ -14,9 +14,8 @@
                     <tr>
                         <th>Nama Paket</th>
                         <th>Id Paket</th>
-                        <th>Id Outlet</th>
                         <th>Jenis</th>
-                        <th>Harga</th>
+                        <th>Harga/pcs</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -25,7 +24,7 @@
                         <tr>
                             <td>{{ $p->nama_paket }}</td>
                             <td>{{ $p->formatted_id }}</td>
-                            <td>{{ $p->formatted_outlet_id }}</td>
+                            
                             <td>{{ $p->jenis }}</td>
                             <td>Rp. {{ number_format($p->harga, 0, ',', '.') }}</td>
                             <td>

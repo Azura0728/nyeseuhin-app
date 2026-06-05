@@ -39,6 +39,32 @@
         </select>
     </div>
 
+    <div
+    class="mb-3"
+    id="outlet-wrapper">
+
+    <label>Outlet</label>
+
+    <select
+        name="outlet_id"
+        class="form-control">
+
+        <option value="">
+            Pilih Outlet
+        </option>
+
+        @foreach($outlets as $outlet)
+
+        <option value="{{ $outlet->id }}">
+            {{ $outlet->nama }}
+        </option>
+
+        @endforeach
+
+    </select>
+
+</div>
+
     <div class="mb-3 form-check">
         <input type="checkbox" class="form-check-input" id="is_super_admin" name="is_super_admin" value="1">
         <label class="form-check-label" for="is_super_admin">
@@ -49,5 +75,49 @@
     <button type="submit" class="btn btn-primary">Simpan</button>
     <a href="{{ route('pengguna.index') }}" class="btn btn-secondary">Kembali</a>
 </form>
+
+<script>
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+        const role =
+            document.getElementById('role');
+
+        const outlet =
+            document.getElementById(
+                'outlet-wrapper'
+            );
+
+        function toggleOutlet() {
+
+            if (
+                role.value == 'kasir'
+            ) {
+
+                outlet.style.display =
+                    'block';
+
+            } else {
+
+                outlet.style.display =
+                    'none';
+
+            }
+
+        }
+
+        toggleOutlet();
+
+        role.addEventListener(
+            'change',
+            toggleOutlet
+        );
+
+    }
+);
+
+</script>
 
 @endsection

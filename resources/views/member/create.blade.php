@@ -33,6 +33,30 @@
                     <label class="form-label">No. Telepon</label>
                     <input type="text" name="no_telp" class="form-control" required>
                 </div>
+                <div class="mb-3">
+    <label class="form-label">
+        Outlet
+    </label>
+
+    <select
+        name="outlet_id"
+        class="form-control"
+        required>
+
+        <option value="">
+            Pilih Outlet
+        </option>
+
+        @foreach($outlets as $outlet)
+
+            <option value="{{ $outlet->id }}">
+                {{ $outlet->nama }}
+            </option>
+
+        @endforeach
+
+    </select>
+</div>
                 <button type="submit" class="btn btn-primary">Simpan</button>
                 <a href="{{ route('member.index') }}" class="btn btn-secondary ms-2">Batal</a>
             </form>

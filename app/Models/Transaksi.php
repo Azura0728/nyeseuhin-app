@@ -13,8 +13,16 @@ class Transaksi extends Model
     'batas_waktu',
     'total',
     'status',
-    'dibayar'
+    'dibayar',
+    "outlet_id",
     ];
+    
+
+    public function outlet()
+    {
+        return $this->belongsTo(Outlet::class);
+    }
+
     public function member()
 {
     return $this->belongsTo(Member::class);

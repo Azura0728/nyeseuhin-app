@@ -49,10 +49,57 @@
         readonly>
 </div>
 
+
 @endif
+
+<div
+    class="mb-3"
+    id="outlet-wrapper"
+    style="
+    {{
+        ($user->role == 'kasir' && !$user->is_super_admin)
+            ? ''
+            : 'display:none;'
+    }}
+">
+
+    <label class="form-label">
+        Outlet
+    </label>
+
+    <select
+        name="outlet_id"
+        class="form-control">
+
+        <option value="">
+            -- Pilih Outlet --
+        </option>
+
+        @foreach($outlets as $outlet)
+
+        <option
+            value="{{ $outlet->id }}"
+            {{ $user->outlet_id == $outlet->id ? 'selected' : '' }}>
+
+            {{ $outlet->nama }}
+
+        </option>
+
+        @endforeach
+
+    </select>
+
+</div>
 
     @if(Auth::user()->isSuperAdmin())
     <div class="mb-3 form-check">
+        <input
+            type="checkbox"
+            class="form-check-input"
+            id="is_super_admin"
+            name="is_super_admin"
+            value="1"
+            {{ $user->is_super_admin ? 'checked' : '' }}>
         <label class="form-check-label" for="is_super_admin">
             Super Admin (Bisa manage admin lain)
         </label>
@@ -62,5 +109,64 @@
     <button type="submit" class="btn btn-primary">Update</button>
     <a href="{{ route('pengguna.index') }}" class="btn btn-secondary">Kembali</a>
 </form>
+
+<script>
+
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+        const role =
+            document.getElementById('role');
+
+        const outlet =
+            document.getElementById(
+                'outlet-wrapper'
+            );
+
+        const superAdmin =
+            document.getElementById(
+                'is_super_admin'
+            );
+
+        if(!role || !outlet) return;
+
+        function toggleOutlet() {
+
+            if (
+                role.value === 'kasir' &&
+                !(superAdmin && superAdmin.checked)
+            ) {
+
+                outlet.style.display = 'block';
+
+            } else {
+
+                outlet.style.display = 'none';
+
+            }
+
+        }
+
+        toggleOutlet();
+
+        role.addEventListener(
+            'change',
+            toggleOutlet
+        );
+
+        if(superAdmin){
+
+            superAdmin.addEventListener(
+                'change',
+                toggleOutlet
+            );
+
+        }
+
+    }
+);
+
+</script>
 
 @endsection

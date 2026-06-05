@@ -77,6 +77,40 @@
                         </select>
                     </div>
 
+                    @if(auth()->user()->role != 'kasir')
+
+                    <div class="col-md-3">
+
+                        <label class="form-label">
+                            Outlet
+                        </label>
+
+                        <select
+                            name="outlet_id"
+                            class="form-select">
+
+                            <option value="">
+                                Semua Outlet
+                            </option>
+
+                            @foreach($outlets as $outlet)
+
+                            <option
+                                value="{{ $outlet->id }}"
+                                {{ request('outlet_id') == $outlet->id ? 'selected' : '' }}>
+
+                                {{ $outlet->nama }}
+
+                            </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    @endif
+
                     <div class="col-md-3 d-flex align-items-end">
 
                         <button

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Outlet;
 
 class UserController extends Controller
 {
@@ -37,7 +38,13 @@ class UserController extends Controller
         if (!Auth::user()->isSuperAdmin()) {
             return redirect()->route('pengguna.index')->with('error', 'Anda tidak memiliki izin untuk menambah user');
         }
-        return view('pengguna.create');
+
+        $outlets = Outlet::all();
+
+        return view(
+            'pengguna.create',
+            compact('outlets')
+        );
     }
 
     /**
@@ -56,7 +63,22 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
             'role' => 'required|in:admin,owner,kasir',
             'is_super_admin' => 'boolean',
+            'outlet_id' => 'nullable|exists:outlets,id',
         ]);
+
+        if (
+    $request->role == 'kasir' &&
+    !$request->outlet_id
+) {
+
+    return back()
+        ->withErrors([
+            'outlet_id' =>
+                'Kasir wajib ditempatkan ke outlet.'
+        ])
+        ->withInput();
+
+}
 
         User::create([
             'name' => $request->name,
@@ -64,6 +86,9 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'is_super_admin' => $request->is_super_admin ?? false,
+            'outlet_id' => $request->role == 'kasir'
+                ? $request->outlet_id
+                : null,
         ]);
 
         return redirect()->route('pengguna.index')->with('success', 'User berhasil ditambahkan');
@@ -81,18 +106,25 @@ class UserController extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit(User $user)
-    {
-        // Super Admin bisa edit siapa saja
-        // Admin biasa hanya bisa edit dirinya sendiri
-        $currentUser = Auth::user();
-        
-        if (!$currentUser->isSuperAdmin() && $currentUser->id != $user->id) {
-            return redirect()->route('pengguna.index')->with('error', 'Anda hanya bisa edit data diri sendiri');
-        }
-        
-        return view('pengguna.edit', compact('user'));
+{
+    $currentUser = Auth::user();
+
+    if (
+        !$currentUser->isSuperAdmin() &&
+        $currentUser->id != $user->id
+    ) {
+        return redirect()
+            ->route('pengguna.index')
+            ->with('error', 'Anda hanya bisa edit data diri sendiri');
     }
 
+    $outlets = Outlet::all();
+
+    return view(
+        'pengguna.edit',
+        compact('user', 'outlets')
+    );
+}
     /**
      * Update the specified resource in storage.
      */
@@ -107,12 +139,27 @@ class UserController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:8',
-            'role' => 'required|in:admin,owner,kasir',
-            'is_super_admin' => 'boolean',
-        ]);
+    'name' => 'required|string|max:255',
+    'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+    'password' => 'nullable|string|min:8',
+    'role' => 'required|in:admin,owner,kasir',
+    'is_super_admin' => 'boolean',
+    'outlet_id' => 'nullable|exists:outlets,id',
+]);
+
+        if (
+    $request->role == 'kasir' &&
+    !$request->outlet_id
+) {
+
+    return back()
+        ->withErrors([
+            'outlet_id' =>
+                'Kasir wajib ditempatkan ke outlet.'
+        ])
+        ->withInput();
+
+}
 
         if (
     $user->id == auth()->id() &&
@@ -150,17 +197,25 @@ class UserController extends Controller
     }
 }
 
+
+
     $user->update([
         'name' => $request->name,
         'email' => $request->email,
+        'outlet_id' => $request->outlet_id,
     ]);
 
 } else {
 
-    $data = [
+   $data = [
     'name' => $request->name,
     'email' => $request->email,
+    'outlet_id' => $request->role == 'kasir'
+        ? $request->outlet_id
+        : null,
 ];
+
+    
 
 if (
     !($user->id == auth()->id() &&

@@ -21,7 +21,99 @@
 <!-- CARD -->
 <div class="card shadow-sm border-0">
     <div class="card-body">
+<form method="GET" class="mb-3">
 
+    <div class="row">
+
+        <div class="col-md-4">
+
+            <input
+                type="text"
+                name="keyword"
+                class="form-control"
+                placeholder="Cari nama member..."
+                value="{{ request('keyword') }}">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <select
+                name="status"
+                class="form-control">
+
+                <option value="">
+                    Semua Status
+                </option>
+
+                <option value="baru"
+    {{ request('status') == 'baru' ? 'selected' : '' }}>
+    Baru
+</option>
+
+<option value="proses"
+    {{ request('status') == 'proses' ? 'selected' : '' }}>
+    Proses
+</option>
+
+<option value="selesai"
+    {{ request('status') == 'selesai' ? 'selected' : '' }}>
+    Selesai
+</option>
+
+<option value="diambil"
+    {{ request('status') == 'diambil' ? 'selected' : '' }}>
+    Diambil
+</option>
+
+            </select>
+
+        </div>
+
+        @if(auth()->user()->role != 'kasir')
+
+        <div class="col-md-3">
+
+            <select
+                name="outlet_id"
+                class="form-control">
+
+                <option value="">
+                    Semua Outlet
+                </option>
+
+                @foreach($outlets as $outlet)
+
+                <option
+                    value="{{ $outlet->id }}"
+                    {{ request('outlet_id') == $outlet->id ? 'selected' : '' }}>
+
+                    {{ $outlet->nama }}
+
+                </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        @endif
+
+        <div class="col-md-2">
+
+            <button
+                class="btn btn-primary w-100">
+
+                Cari
+
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
     <table class="table table-bordered align-middle">
 
         <thead>

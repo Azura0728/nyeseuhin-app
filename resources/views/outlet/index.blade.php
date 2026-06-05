@@ -49,30 +49,38 @@
 
                     <td>{{ $o->no_telp }}</td>
 
-                    <td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-2">
 
-                        <a href="{{ route('outlet.edit', $o->id) }}"
-                           class="btn btn-warning btn-sm">
+                            <a href="{{ route('outlet.show', $o->id) }}"
+                            class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i>
+                                Detail
+                            </a>
 
-                            <i class="fas fa-pen-to-square me-1"></i>
-                            Edit
+                            <a href="{{ route('outlet.edit', $o->id) }}"
+                            class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                                Edit
+                            </a>
 
-                        </a>
+                            <form action="{{ route('outlet.destroy', $o->id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus outlet ini?')">
 
-                        <form action="{{ route('outlet.destroy', $o->id) }}"
-                              method="POST"
-                              class="d-inline">
+                                @csrf
+                                @method('DELETE')
 
-                            @csrf
-                            @method('DELETE')
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm btn-delete">
+                                    <i class="fas fa-trash"></i>
+                                    Hapus
+                                </button>
 
-                            <button type="submit"
-                                    class="btn btn-danger btn-sm btn-delete">
+                            </form>
 
-                                <i class="fas fa-trash me-1"></i>
-                                Hapus
-
-                            </button>
+                        </div>
+                    </td>
 
                         </form>
 

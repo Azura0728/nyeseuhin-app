@@ -11,4 +11,21 @@ class Outlet extends Model
         'alamat',
         'no_telp',
     ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+    
+    public function members()
+{
+    return $this->hasMany(Member::class);
 }
+
+public function transaksis()
+{
+    return $this->hasMany(Transaksi::class);
+}
+
+}
+

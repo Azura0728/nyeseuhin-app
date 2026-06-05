@@ -2,10 +2,51 @@
 
 @section('content')
 
+<div class="card shadow-sm mb-4">
+
+    <div class="card-body">
+
+        <h4>
+            Selamat Datang,
+            {{ $user->name }}
+        </h4>
+
+        <p>
+            Role:
+            <strong>
+                {{ ucfirst($user->role) }}
+            </strong>
+        </p>
+
+    </div>
+
+</div>
+
+@if($user->role == 'kasir')
+
+<div class="card border-primary mb-4">
+
+    <div class="card-body">
+
+        <h5>
+            Outlet Penempatan
+        </h5>
+
+        <h3>
+            {{ $user->outlet->nama ?? 'Belum ditentukan' }}
+        </h3>
+
+    </div>
+</div>
+
+@endif
+
 <h2 class="fw-bold mb-4">
     Dashboard
 </h2>
 
+
+@if($user->role != 'kasir')
 <div class="row g-4">
 
     <div class="col-md-3">
@@ -38,13 +79,51 @@
     <div class="col-md-3">
         <div class="card border-0 shadow-sm bg-danger text-white">
             <div class="card-body">
-                <h6>Total Pengguna</h6>
+                <h6>Total Member</h6>
                 <h2>{{ $totalUser }}</h2>
             </div>
         </div>
     </div>
 
 </div>
+@endif
+
+@if($user->role == 'kasir')
+
+<div class="row g-4">
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-primary text-white">
+            <div class="card-body">
+                <h6>Total Member</h6>
+                <h2>{{ $totalMember }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-success text-white">
+            <div class="card-body">
+                <h6>Total Transaksi</h6>
+                <h2>{{ $totalTransaksi }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm bg-warning text-dark">
+            <div class="card-body">
+                <h6>Pendapatan Outlet</h6>
+                <h5>
+                    Rp {{ number_format($totalPendapatan,0,',','.') }}
+                </h5>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@endif
 
 <div class="card shadow-sm border-0 mt-4">
 

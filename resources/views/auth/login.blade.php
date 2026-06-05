@@ -41,12 +41,7 @@
                 Login
             </button>
 
-            <div class="mt-3 text-center">
-                <span class="text-muted">Belum punya akun?</span>
-                <a href="{{ route('register') }}" class="btn btn-link p-0 ms-1">
-                    Daftar sekarang
-                </a>
-            </div>
+            
         </form>
 
     </div>

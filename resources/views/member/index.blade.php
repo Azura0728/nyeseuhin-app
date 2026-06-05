@@ -15,9 +15,72 @@
 
 </div>
 
+
+
+
 <div class="card shadow-sm border-0">
 
     <div class="card-body">
+
+       <form method="GET" class="mb-3">
+
+    <div class="row">
+
+        <div class="col-md-4">
+
+            <input
+                type="text"
+                name="keyword"
+                class="form-control"
+                placeholder="Cari nama member..."
+                value="{{ request('keyword') }}">
+
+        </div>
+
+        @if(auth()->user()->role != 'kasir')
+
+        <div class="col-md-4">
+
+            <select
+                name="outlet_id"
+                class="form-control">
+
+                <option value="">
+                    Semua Outlet
+                </option>
+
+                @foreach($outlets as $outlet)
+
+                <option
+                    value="{{ $outlet->id }}"
+                    {{ request('outlet_id') == $outlet->id ? 'selected' : '' }}>
+
+                    {{ $outlet->nama }}
+
+                </option>
+
+                @endforeach
+
+            </select>
+
+        </div>
+
+        @endif
+
+        <div class="col-md-2">
+
+            <button
+                class="btn btn-primary w-100">
+
+                Cari
+
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
 
         <table class="table table-hover table-bordered">
 

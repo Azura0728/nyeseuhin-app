@@ -15,19 +15,48 @@ class TransaksiController extends Controller
 
 public function create()
 {
-    $members = Member::all();
+    $user = auth()->user();
+
+    if ($user->role == 'kasir') {
+
+        $members = Member::where(
+            'outlet_id',
+            $user->outlet_id
+        )->get();
+
+    } else {
+
+        $members = Member::all();
+
+    }
+
     $pakets = Paket::all();
 
-    return view('transaksi.create', compact(
-        'members',
-        'pakets'
-    ));
+    return view(
+        'transaksi.create',
+        compact(
+            'members',
+            'pakets'
+        )
+    );
 }
+
 public function store(Request $request)
 {
     DB::beginTransaction();
 
     try {
+
+    $member = Member::findOrFail(
+    $request->member_id
+);
+
+if (
+    auth()->user()->role == 'kasir' &&
+    $member->outlet_id != auth()->user()->outlet_id
+) {
+    abort(403);
+}
 
         // ambil paket
         $paket = Paket::findOrFail($request->paket_id);
@@ -39,6 +68,7 @@ public function store(Request $request)
         $transaksi = Transaksi::create([
             'member_id' => $request->member_id,
             'user_id' => auth()->id(),
+            'outlet_id' => auth()->user()->outlet_id,
             'tgl' => now(),
             'batas_waktu' => now()->addDays(3),
             'total' => $subtotal,
@@ -65,20 +95,127 @@ public function store(Request $request)
         return $e->getMessage();
     }
 }
-public function index()
-{
-    $transaksis = Transaksi::with('member')->get();
 
-    return view('transaksi.index', compact(
-        'transaksis'
-    ));
+public function index(Request $request)
+{
+    $user = auth()->user();
+
+    $query = Transaksi::with([
+        'member',
+        'user'
+    ]);
+
+    // Kasir hanya melihat transaksi outlet sendiri
+    if ($user->role == 'kasir') {
+
+        $query->whereHas(
+            'member',
+            function ($q) use ($user) {
+
+                $q->where(
+                    'outlet_id',
+                    $user->outlet_id
+                );
+
+            }
+        );
+    }
+
+    // Filter outlet untuk admin/super admin
+    if (
+        $user->role != 'kasir' &&
+        $request->outlet_id
+    ) {
+
+        $query->whereHas(
+            'member',
+            function ($q) use ($request) {
+
+                $q->where(
+                    'outlet_id',
+                    $request->outlet_id
+                );
+
+            }
+        );
+    }
+
+    // Search nama member
+    if ($request->keyword) {
+
+        $query->whereHas(
+            'member',
+            function ($q) use ($request) {
+
+                $q->where(
+                    'nama',
+                    'like',
+                    '%'.$request->keyword.'%'
+                );
+
+            }
+        );
+    }
+
+    // Filter status
+    if ($request->status) {
+
+        $query->where(
+            'status',
+            $request->status
+        );
+    }
+
+    $transaksis = $query
+        ->latest()
+        ->get();
+
+    $outlets = \App\Models\Outlet::all();
+
+    return view(
+        'transaksi.index',
+        compact(
+            'transaksis',
+            'outlets'
+        )
+    );
 }
 
 public function edit($id)
 {
     $transaksi = Transaksi::findOrFail($id);
 
-    $members = Member::all();
+    if (
+    auth()->user()->role == 'kasir' &&
+    $transaksi->member->outlet_id != auth()->user()->outlet_id
+) {
+    abort(403);
+}
+
+    $user = auth()->user();
+
+if (
+    $user->role == 'kasir' &&
+    $transaksi->member->outlet_id != $user->outlet_id
+) {
+    abort(403);
+}
+
+    $user = auth()->user();
+
+    if ($user->role == 'kasir') {
+
+        $members = Member::where(
+            'outlet_id',
+            $user->outlet_id
+        )->get();
+
+    } else {
+
+        $members = Member::all();
+
+    }
+
     $pakets = Paket::all();
 
     return view(
@@ -94,6 +231,22 @@ public function edit($id)
 public function update(Request $request, $id)
 {
     $transaksi = Transaksi::findOrFail($id);
+
+    if (
+    auth()->user()->role == 'kasir' &&
+    $transaksi->member->outlet_id != auth()->user()->outlet_id
+) {
+    abort(403);
+}
+
+    $user = auth()->user();
+
+if (
+    $user->role == 'kasir' &&
+    $transaksi->member->outlet_id != $user->outlet_id
+) {
+    abort(403);
+}
 
     $transaksi->update([
 
@@ -113,6 +266,22 @@ public function update(Request $request, $id)
 public function destroy($id)
 {
     $transaksi = Transaksi::findOrFail($id);
+
+    if (
+    auth()->user()->role == 'kasir' &&
+    $transaksi->member->outlet_id != auth()->user()->outlet_id
+) {
+    abort(403);
+}
+
+    $user = auth()->user();
+
+if (
+    $user->role == 'kasir' &&
+    $transaksi->member->outlet_id != $user->outlet_id
+) {
+    abort(403);
+}
 
     DetailTransaksi::where(
         'transaksi_id',
